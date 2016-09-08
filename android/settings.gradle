@@ -1,0 +1,3 @@
+rootProject.name = 'AlbatrossPlayer'
+
+include ':app'
