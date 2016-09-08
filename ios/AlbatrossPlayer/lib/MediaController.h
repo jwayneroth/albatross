@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTBridgeModule.h"
 
 #import <MediaPlayer/MediaPlayer.h>
 

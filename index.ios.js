@@ -11,7 +11,7 @@ import React, {
 import {
 	ListView,
 	TouchableHighlight,
-	PickerIOS,
+	//PickerIOS,
 	Slider,
 	AppRegistry,
 	StyleSheet,
@@ -21,14 +21,18 @@ import {
 	NativeAppEventEmitter
 } from 'react-native';
 
-var PickerItemIOS = PickerIOS.Item;
+//var PickerItemIOS = PickerIOS.Item;
 var LibraryPlayer = require('NativeModules').LibraryPlayer;
 var MediaController = require('NativeModules').MediaController;
 
 var sliderDefaults = {
 	minimumValue: 0.5,
 	maximumValue: 2.0,
-	step: 0.1
+	step: 0.2
+}
+
+var buttonDefaults = {
+	underlayColor: '#f9dc91'
 }
 
 class AlbatrossPlayer extends Component {
@@ -44,27 +48,18 @@ class AlbatrossPlayer extends Component {
 			loadingTracks: true,
 			rateSliderActive: false,
 			rateSliderVal: 1.0,
-			songPlaying : 'None'
+			songPlaying : 'No Song Selected'
 		};
 		
 		//this._getTracks();
 		
-		this.bindMethods();
-		
-		MediaController.showSongs();
+		MediaController.findAlbatross().then((success) => {
+			console.log('found albatross :)');
+		}, (error) => {
+			console.log('no albatross :(');
+		});
 		
 	};
-	
-	bindMethods() {
-		if (!this.bindableMethods) {
-			return;
-		}   
-
-		for (var methodName in this.bindableMethods) {
-			this[methodName] = this.bindableMethods[methodName].bind(this);
-		}
-		
-	}
 	
 	componentDidMount() {
 		// Add Event Listener for SongPlaying event from MediaController
@@ -140,21 +135,60 @@ class AlbatrossPlayer extends Component {
 		
 		this.setState({rateSliderVal: val});
 		
-		LibraryPlayer.setRateAsync(val).then((success) => {
+		MediaController.setRateAsync(val).then((success) => {
 			
-			console.log('setRate success', success);
-		
+			//console.log('setRate success', success);
+			
 		}, (error) => {
 			console.error('setRate error', error);
 		});
 	};
 	
+	_onSelectButtonClick() {
+		
+		MediaController.showPicker();
+		
+	}
+	
 	render() {
 	
-		console.log('//////////TestProject::render///////////');
+		//console.log('//////////TestProject::render///////////');
 		//console.log(this.state);
 		
-		let pic = {uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'};
+		var selectedNote = this.state.songPlaying;
+		var currentRate = 'Rate: ' + this.state.rateSliderVal.toFixed(2);
+		var buttonText = (this.state.songPlaying == 'No Song Selected') ? 'Pick a Song' : 'Pick a different song';
+		
+		return (
+			<View style={styles.container}>
+				<View style={styles.bgWrapper}>
+					<Image 
+					 source={require('./assets/albatross-bg.jpg')}  
+					 resizeMode={Image.resizeMode.cover}
+					 style={styles.bgImage} />
+				</View>
+				<Text style={styles.info}>{selectedNote}</Text>
+				<View style={styles.rateWrapper}>
+					<Text style={styles.info, styles.rateInfo}>{currentRate}</Text>
+					<Slider 
+						style={styles.slider}
+						{...sliderDefaults}
+						value = {this.state.rateSliderVal}
+						disabled = {this.state.rateSliderActive}
+						onValueChange={(val) => this._onRateUpdate(val)} />
+				</View>
+				<View style={styles.buttonWrapper}>
+					<TouchableHighlight 
+					 style={styles.button}
+					 {...buttonDefaults}
+					 onPress={this._onSelectButtonClick}>
+						<Text style={styles.instructions}>{buttonText}</Text>
+					</TouchableHighlight>
+				</View>
+			</View>
+		);
+		
+		/*let pic = {uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'};
 		
 		if (this.state.loadingTracks) {
 			return (
@@ -183,7 +217,7 @@ class AlbatrossPlayer extends Component {
 					renderRow={this._renderRow.bind(this)}
 				/>
 			</View>
-		);
+		);*/
 	};
 }
 
@@ -193,9 +227,52 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		justifyContent: 'flex-start',
 		alignItems: 'center',
-		backgroundColor: '#F5AA98',
+		backgroundColor: '#f7f2e2',
 	},
-	 row: {
+	bgWrapper: {
+		position: 'absolute',
+		top: 0, bottom: 0, left: 0, right: 0,
+		flex: 1,
+	},
+	bgImage: {
+		flex: 1,
+		resizeMode: Image.resizeMode.cover,
+		width: null,
+		height: null
+	},
+	info: {
+		margin: 15,
+	},
+	rateWrapper: {
+		backgroundColor: 'rgba(255,255,255,.7)',
+		borderRadius: 15,
+		margin: 15,
+		padding: 15,
+		alignSelf: 'stretch',
+		alignItems: 'center',
+		marginTop: 120
+	},
+	rateInfo: {
+	},
+	slider: {
+		alignSelf: 'stretch',
+		//height: 10,
+		//margin: 15,
+		//marginTop: 0,
+	},
+	buttonWrapper: {
+		marginTop: 150,
+		alignSelf: 'stretch',
+		alignItems: 'center',
+	},
+	button: {
+		backgroundColor: 'rgba(255,255,255,.7)',
+		borderRadius: 15,
+		padding: 30,
+		paddingTop: 15,
+		paddingBottom: 15,
+	},
+	/*row: {
 		flexDirection: 'column',
 		justifyContent: 'center',
 		padding: 10,
@@ -208,17 +285,10 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		textAlign: 'center',
 		margin: 10,
-	},
+	},*/
 	picker: {
 		alignSelf: 'stretch',
 	},
-	slider: {
-		flex: .9,
-	},
-	bananas: {
-		width: 100,
-		height: 100,
-	}
 });
 
 AppRegistry.registerComponent('AlbatrossPlayer', () => AlbatrossPlayer);
