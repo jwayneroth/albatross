@@ -119,16 +119,24 @@ RCT_EXPORT_METHOD(setRateAsync:(nonnull NSNumber*)rate
 RCT_EXPORT_METHOD(findAlbatross:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject) {
 	
-	UInt32 category = kAudioSessionCategory_MediaPlayback;
+	/*UInt32 category = kAudioSessionCategory_MediaPlayback;
 	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
-	
 	if (!result){
 		NSLog(@"ERROR SETTING AUDIO CATEGORY!\n");
 	}
-	
 	result = AudioSessionSetActive(true);
 	if (!result) {
 		NSLog(@"ERROR SETTING AUDIO SESSION ACTIVE!\n");
+	}*/
+	
+	AVAudioSession *session = [AVAudioSession sharedInstance];
+	
+	NSError *setCategoryError = nil;
+	
+	if (![session setCategory:AVAudioSessionCategoryPlayback
+	//              withOptions:AVAudioSessionCategoryOptionMixWithOthers
+	                    error:&setCategoryError]) {
+		NSLog(setCategoryError);
 	}
 	
 	MPMediaQuery *songsQuery = [[MPMediaQuery alloc] init];
