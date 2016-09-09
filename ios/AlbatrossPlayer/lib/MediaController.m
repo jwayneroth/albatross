@@ -10,26 +10,14 @@
 
 @implementation MediaController
 
-float _currentRate;
-
--(id)initWithRandID {
+-(id)init {
 	self = [super init];
 	if (self) {
 		_randID = arc4random_uniform(1000);
 		_players = [[NSMutableArray alloc] init];
+		_playerID = 0;
 	}
 	return self;
-}
-
--(id)init {
-	return [self initWithRandID];
-}
-
--(float) getCurrentRate {
-	if (!_currentRate) {
-		return 1.0;
-	}
-	return _currentRate;
 }
 
 RCT_EXPORT_MODULE();
@@ -37,11 +25,14 @@ RCT_EXPORT_MODULE();
 @synthesize bridge = _bridge;
 @synthesize randID = _randID;
 @synthesize players = _players;
+@synthesize playerID = _playerID;
 
 //
 // showMediaPicker
 //
--(void) showMediaPicker {
+-(void) showMediaPicker:(NSInteger)playerID  {
+	
+	self.playerID = playerID;
 	
 	if(self.mediaPicker == nil) {
 		
@@ -69,21 +60,44 @@ RCT_EXPORT_MODULE();
 	
 	NSURL *assetURL = [mediaItem valueForProperty:MPMediaItemPropertyAssetURL];
 	
-	[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:[mediaItem valueForProperty:MPMediaItemPropertyTitle]];
+	NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyTitle],
+                              @"title" : [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
+                             @"player" : [NSNumber numberWithInt:self.playerID]
+	};
 	
+	[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
+	                                                    
 	NSError *error;
+	AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:assetURL error:&error];
+	float rate;
+	float volume;
+	float pan;
 	
-	self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:assetURL error:&error];
-	[self.player setDelegate:self];
-	self.player.numberOfLoops = -1;
-	self.player.enableRate = YES;
-	self.player.rate = [self getCurrentRate];
+	if ([self.players count] > self.playerID) {
+		AVAudioPlayer *oldPlayer = [self.players objectAtIndex:self.playerID];
+		rate = oldPlayer.rate;
+		volume = oldPlayer.volume;
+		pan = oldPlayer.pan;
+		[self.players replaceObjectAtIndex:self.playerID withObject:player];
+	} else {
+		rate = 1.0;
+		volume = 1.0;
+		pan = 0;
+		[self.players addObject:player];
+	}
+	
+	[player setDelegate:self];
+	player.numberOfLoops = -1;
+	player.enableRate = YES;
+	player.rate = rate;
+	player.volume = volume;
+	player.pan = pan;
 	
 	if (error) {
 		NSLog(@"%@", [error localizedDescription]);
 	} else {
-		[self.player prepareToPlay];
-		[self.player play];
+		[player prepareToPlay];
+		[player play];
 	}
 	
 	hideMediaPicker();
@@ -108,31 +122,77 @@ void hideMediaPicker() {
 //
 // showPicker
 //
-RCT_EXPORT_METHOD(showPicker) {
-	[self showMediaPicker];
+RCT_EXPORT_METHOD(showPicker:(NSInteger)playerID) {
+	[self showMediaPicker:playerID];
 }
 
 //
 // setRateAsync
 //
 RCT_EXPORT_METHOD(setRateAsync:(nonnull NSNumber*)rate 
+                     forPlayer:(NSInteger)playerID
                       resolver:(RCTPromiseResolveBlock)resolve
                       rejecter:(RCTPromiseRejectBlock)reject) {
 	
-	if (self.player) {
-		self.player.rate = [rate floatValue];
-		resolve(@"set rate");
+	AVAudioPlayer *player;
+	
+	if ([self.players count] > playerID) {
+		player = [self.players objectAtIndex:playerID];
 	}
 	
-	_currentRate = [rate floatValue];
+	if (player) {
+		player.rate = [rate floatValue];
+		NSLog(@"setRate %f for player %@", [rate floatValue], [NSNumber numberWithInt:playerID]);
+		resolve(@"set rate");
+	}
+}
+
+//
+// setVolAsync
+//
+RCT_EXPORT_METHOD(setVolAsync:(nonnull NSNumber*)volume 
+                     forPlayer:(NSInteger)playerID
+                      resolver:(RCTPromiseResolveBlock)resolve
+                      rejecter:(RCTPromiseRejectBlock)reject) {
 	
+	AVAudioPlayer *player;
+	
+	if ([self.players count] > playerID) {
+		player = [self.players objectAtIndex:playerID];
+	}
+	
+	if (player) {
+		player.volume = [volume floatValue];
+		resolve(@"set vol");
+	}
+}
+
+//
+// setPanAsync
+//
+RCT_EXPORT_METHOD(setPanAsync:(nonnull NSNumber*)pan 
+                     forPlayer:(NSInteger)playerID
+                      resolver:(RCTPromiseResolveBlock)resolve
+                      rejecter:(RCTPromiseRejectBlock)reject) {
+	
+	AVAudioPlayer *player;
+	
+	if ([self.players count] > playerID) {
+		player = [self.players objectAtIndex:playerID];
+	}
+	
+	if (player) {
+		player.pan = [pan floatValue];
+		resolve(@"set pan");
+	}
 }
 
 //
 // findAlbatross
 //
-RCT_EXPORT_METHOD(findAlbatross:(RCTPromiseResolveBlock)resolve
-                   rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
+                       resolver:(RCTPromiseResolveBlock)resolve
+                       rejecter:(RCTPromiseRejectBlock)reject) {
 	
 	NSLog(@"findAlbatross::%zd", self.randID);
 	
@@ -156,22 +216,39 @@ RCT_EXPORT_METHOD(findAlbatross:(RCTPromiseResolveBlock)resolve
 		
 			NSURL *assetURL = [item valueForProperty:MPMediaItemPropertyAssetURL];
 			
-			[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:title];
+			NSDictionary *evtObject = @{@"artist": albumArtist,
+                                  @"title" : title,
+                                 @"player" : [NSNumber numberWithInt:playerID]
+			};
+	
+	[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
 			
 			NSError *error;
+			AVAudioPlayer *player;
 			
-			self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:assetURL error:&error];
-			[self.player setDelegate:self];
-			self.player.numberOfLoops = -1;
-			self.player.enableRate = YES;
-			self.player.rate = [self getCurrentRate];
+			player = [[AVAudioPlayer alloc] initWithContentsOfURL:assetURL error:&error];
+			float rate;
+			
+			if ([self.players count] > self.playerID) {
+				AVAudioPlayer *oldPlayer = [self.players objectAtIndex:self.playerID];
+				rate = oldPlayer.rate;
+				[self.players replaceObjectAtIndex:self.playerID withObject:player];
+			} else {
+				rate = 1.0;
+				[self.players addObject:player];
+			}
+			
+			[player setDelegate:self];
+			player.numberOfLoops = -1;
+			player.enableRate = YES;
+			player.rate = rate;
 			
 			if (error) {
 				reject(@"no_albatross", @"albatross not found", error); 
 			} else {
-				[self.player prepareToPlay];
-				[self.player play];
-				resolve(@[@{@"duration": @(self.player.duration), @"numberOfChannels": @(self.player.numberOfChannels)}]);
+				[player prepareToPlay];
+				[player play];
+				resolve(@[@{@"duration": @(player.duration), @"numberOfChannels": @(player.numberOfChannels)}]);
 			}
 			
 			return;

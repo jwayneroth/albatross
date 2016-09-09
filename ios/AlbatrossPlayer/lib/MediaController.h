@@ -17,11 +17,12 @@
 
 @interface MediaController : NSObject<RCTBridgeModule, MPMediaPickerControllerDelegate, AVAudioPlayerDelegate>
 
-@property (nonatomic, retain) AVAudioPlayer *player;
+//@property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) MPMediaPickerController *mediaPicker;
 @property (nonatomic, retain) NSMutableArray *players;
 @property (nonatomic, assign) NSInteger randID;
+@property (nonatomic, assign) NSInteger playerID;
 
--(void) showMediaPicker;
+//-(void) showMediaPicker:(NSInteger)playerID;
 
 @end
