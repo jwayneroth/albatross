@@ -12,6 +12,19 @@
 
 float _currentRate;
 
+-(id)initWithRandID {
+	self = [super init];
+	if (self) {
+		_randID = arc4random_uniform(1000);
+		_players = [[NSMutableArray alloc] init];
+	}
+	return self;
+}
+
+-(id)init {
+	return [self initWithRandID];
+}
+
 -(float) getCurrentRate {
 	if (!_currentRate) {
 		return 1.0;
@@ -22,6 +35,8 @@ float _currentRate;
 RCT_EXPORT_MODULE();
 
 @synthesize bridge = _bridge;
+@synthesize randID = _randID;
+@synthesize players = _players;
 
 //
 // showMediaPicker
@@ -119,23 +134,13 @@ RCT_EXPORT_METHOD(setRateAsync:(nonnull NSNumber*)rate
 RCT_EXPORT_METHOD(findAlbatross:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject) {
 	
-	/*UInt32 category = kAudioSessionCategory_MediaPlayback;
-	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
-	if (!result){
-		NSLog(@"ERROR SETTING AUDIO CATEGORY!\n");
-	}
-	result = AudioSessionSetActive(true);
-	if (!result) {
-		NSLog(@"ERROR SETTING AUDIO SESSION ACTIVE!\n");
-	}*/
+	NSLog(@"findAlbatross::%zd", self.randID);
 	
 	AVAudioSession *session = [AVAudioSession sharedInstance];
 	
 	NSError *setCategoryError = nil;
 	
-	if (![session setCategory:AVAudioSessionCategoryPlayback
-	//              withOptions:AVAudioSessionCategoryOptionMixWithOthers
-	                    error:&setCategoryError]) {
+	if (![session setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError]) {
 		NSLog(setCategoryError);
 	}
 	

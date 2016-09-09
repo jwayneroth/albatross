@@ -15,11 +15,13 @@
 
 @import AVFoundation;
 
-@interface MediaController : NSObject<RCTBridgeModule,MPMediaPickerControllerDelegate, AVAudioPlayerDelegate>
+@interface MediaController : NSObject<RCTBridgeModule, MPMediaPickerControllerDelegate, AVAudioPlayerDelegate>
 
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) MPMediaPickerController *mediaPicker;
+@property (nonatomic, retain) NSMutableArray *players;
+@property (nonatomic, assign) NSInteger randID;
 
-- (void) showMediaPicker;
+-(void) showMediaPicker;
 
 @end
