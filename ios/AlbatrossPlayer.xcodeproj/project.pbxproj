@@ -21,8 +21,10 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
-		6CDFDDA31D80967000471D47 /* LibraryPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDFDDA21D80967000471D47 /* LibraryPlayer.m */; };
-		6CDFDDA61D80C4F900471D47 /* MediaController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDFDDA51D80C4F900471D47 /* MediaController.m */; };
+		6C23490E1D870820000603AD /* JREventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C23490D1D870820000603AD /* JREventEmitter.m */; };
+		6C23492F1D8714B4000603AD /* JRMultiTrackPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C23492E1D8714B4000603AD /* JRMultiTrackPlayer.m */; };
+		6C2349351D8714E2000603AD /* JRLibraryPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C2349341D8714E2000603AD /* JRLibraryPlayer.m */; };
+		6C2349371D8715B3000603AD /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 6C2349361D8715B3000603AD /* lib */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 /* End PBXBuildFile section */
 
@@ -125,10 +127,13 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AlbatrossPlayer/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AlbatrossPlayer/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		6CDFDDA11D80967000471D47 /* LibraryPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryPlayer.h; path = AlbatrossPlayer/lib/LibraryPlayer.h; sourceTree = "<group>"; };
-		6CDFDDA21D80967000471D47 /* LibraryPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibraryPlayer.m; path = AlbatrossPlayer/lib/LibraryPlayer.m; sourceTree = "<group>"; };
-		6CDFDDA41D80C4F900471D47 /* MediaController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaController.h; path = AlbatrossPlayer/lib/MediaController.h; sourceTree = "<group>"; };
-		6CDFDDA51D80C4F900471D47 /* MediaController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaController.m; path = AlbatrossPlayer/lib/MediaController.m; sourceTree = "<group>"; };
+		6C23490C1D870820000603AD /* JREventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JREventEmitter.h; path = AlbatrossPlayer/lib/JREventEmitter.h; sourceTree = "<group>"; };
+		6C23490D1D870820000603AD /* JREventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JREventEmitter.m; path = AlbatrossPlayer/lib/JREventEmitter.m; sourceTree = "<group>"; };
+		6C23492D1D8714B4000603AD /* JRMultiTrackPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JRMultiTrackPlayer.h; path = AlbatrossPlayer/lib/JRMultiTrackPlayer.h; sourceTree = "<group>"; };
+		6C23492E1D8714B4000603AD /* JRMultiTrackPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JRMultiTrackPlayer.m; path = AlbatrossPlayer/lib/JRMultiTrackPlayer.m; sourceTree = "<group>"; };
+		6C2349331D8714E2000603AD /* JRLibraryPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JRLibraryPlayer.h; path = AlbatrossPlayer/lib/JRLibraryPlayer.h; sourceTree = "<group>"; };
+		6C2349341D8714E2000603AD /* JRLibraryPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JRLibraryPlayer.m; path = AlbatrossPlayer/lib/JRLibraryPlayer.m; sourceTree = "<group>"; };
+		6C2349361D8715B3000603AD /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = AlbatrossPlayer/lib; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -244,10 +249,12 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				6CDFDDA11D80967000471D47 /* LibraryPlayer.h */,
-				6CDFDDA21D80967000471D47 /* LibraryPlayer.m */,
-				6CDFDDA41D80C4F900471D47 /* MediaController.h */,
-				6CDFDDA51D80C4F900471D47 /* MediaController.m */,
+				6C23490C1D870820000603AD /* JREventEmitter.h */,
+				6C23490D1D870820000603AD /* JREventEmitter.m */,
+				6C23492D1D8714B4000603AD /* JRMultiTrackPlayer.h */,
+				6C2349331D8714E2000603AD /* JRLibraryPlayer.h */,
+				6C2349341D8714E2000603AD /* JRLibraryPlayer.m */,
+				6C23492E1D8714B4000603AD /* JRMultiTrackPlayer.m */,
 			);
 			name = AlbatrossPlayer;
 			sourceTree = "<group>";
@@ -296,6 +303,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				6C2349361D8715B3000603AD /* lib */,
 				13B07FAE1A68108700A75B9A /* AlbatrossPlayer */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* AlbatrossPlayerTests */,
@@ -359,7 +367,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -514,6 +522,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C2349371D8715B3000603AD /* lib in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -550,10 +559,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6CDFDDA61D80C4F900471D47 /* MediaController.m in Sources */,
+				6C2349351D8714E2000603AD /* JRLibraryPlayer.m in Sources */,
+				6C23492F1D8714B4000603AD /* JRMultiTrackPlayer.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				6C23490E1D870820000603AD /* JREventEmitter.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				6CDFDDA31D80967000471D47 /* LibraryPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -579,6 +589,7 @@
 				INFOPLIST_FILE = AlbatrossPlayerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlbatrossPlayer.app/AlbatrossPlayer";
 			};
@@ -592,6 +603,7 @@
 				INFOPLIST_FILE = AlbatrossPlayerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlbatrossPlayer.app/AlbatrossPlayer";
 			};
@@ -662,6 +674,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;

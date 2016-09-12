@@ -1,15 +1,15 @@
 //
-//  LibraryPlayer.m
+//  JRLibraryPlayer.m
 //  AlbatrossPlayer
 //
-//  Created by Jason Roth on 9/7/16.
+//  Created by Jason Roth on 9/12/16.
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-#import "LibraryPlayer.h"
+#import "JRLibraryPlayer.h"
 #import <MediaPlayer/MediaPlayer.h>
 
-@implementation LibraryPlayer
+@implementation JRLibraryPlayer
 
 AVAudioPlayer* _player;
 float _currentRate;

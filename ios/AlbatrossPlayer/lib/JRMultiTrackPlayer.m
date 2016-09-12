@@ -1,14 +1,14 @@
 //
-//  MediaController.m
+//  JRMultiTrackPlayer.m
 //  AlbatrossPlayer
 //
 //  Created by Jason Roth on 9/7/16.
 //
 
-#import "MediaController.h"
+#import "JRMultiTrackPlayer.h"
 #import "AppDelegate.h"
 
-@implementation MediaController
+@implementation JRMultiTrackPlayer
 
 -(id)init {
 	self = [super init];
@@ -62,7 +62,7 @@ RCT_EXPORT_MODULE();
 	
 	NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
                               @"title" : [mediaItem valueForProperty:MPMediaItemPropertyTitle],
-                             @"player" : [NSNumber numberWithInt:self.playerID]
+                             @"player" : [NSNumber numberWithInteger:self.playerID]
 	};
 	
 	[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
@@ -80,7 +80,7 @@ RCT_EXPORT_MODULE();
 		pan = oldPlayer.pan;
 		[self.players replaceObjectAtIndex:self.playerID withObject:player];
 	} else {
-		rate = 1.0;
+		rate = 1.0;                                                                                                                  
 		volume = 1.0;
 		pan = 0;
 		[self.players addObject:player];
@@ -142,7 +142,7 @@ RCT_EXPORT_METHOD(setRateAsync:(nonnull NSNumber*)rate
 	
 	if (player) {
 		player.rate = [rate floatValue];
-		NSLog(@"setRate %f for player %@", [rate floatValue], [NSNumber numberWithInt:playerID]);
+		NSLog(@"setRate %f for player %@", [rate floatValue], [NSNumber numberWithInteger:playerID]);
 		resolve(@"set rate");
 	}
 }
@@ -188,6 +188,29 @@ RCT_EXPORT_METHOD(setPanAsync:(nonnull NSNumber*)pan
 }
 
 //
+// stopPlayerByID
+//
+RCT_EXPORT_METHOD(stopPlayerByID:(NSInteger)playerID
+                      resolver:(RCTPromiseResolveBlock)resolve
+                      rejecter:(RCTPromiseRejectBlock)reject) {
+	
+	AVAudioPlayer *player;
+	
+	if ([self.players count] > playerID) {
+		player = [self.players objectAtIndex:playerID];
+	}
+	
+	if (player) {
+		[player stop];
+		player.currentTime = 0;
+		player.rate = 1.0;                                                                                                                  
+		player.volume = 1.0;
+		player.pan = 0;
+		resolve(@"stopped player");
+	}
+}
+
+//
 // findAlbatross
 //
 RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
@@ -201,7 +224,7 @@ RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
 	NSError *setCategoryError = nil;
 	
 	if (![session setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError]) {
-		NSLog(setCategoryError);
+		NSLog(@"%@", [setCategoryError localizedDescription]);
 	}
 	
 	MPMediaQuery *songsQuery = [[MPMediaQuery alloc] init];
@@ -218,7 +241,7 @@ RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
 			
 			NSDictionary *evtObject = @{@"artist": albumArtist,
                                   @"title" : title,
-                                 @"player" : [NSNumber numberWithInt:playerID]
+                                 @"player" : [NSNumber numberWithInteger:playerID]
 			};
 	
 	[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
