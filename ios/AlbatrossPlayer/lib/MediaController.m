@@ -60,8 +60,8 @@ RCT_EXPORT_MODULE();
 	
 	NSURL *assetURL = [mediaItem valueForProperty:MPMediaItemPropertyAssetURL];
 	
-	NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyTitle],
-                              @"title" : [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
+	NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
+                              @"title" : [mediaItem valueForProperty:MPMediaItemPropertyTitle],
                              @"player" : [NSNumber numberWithInt:self.playerID]
 	};
 	

@@ -64,6 +64,7 @@ export class TrackPlayer extends Component {
 		
 		this.styles = StyleSheet.create({
 			container: {
+				flex: 1,
 				alignItems: 'flex-start',
 				//margin: 15,
 				//marginTop: 0,
@@ -74,6 +75,7 @@ export class TrackPlayer extends Component {
 				backgroundColor: 'transparent',
 			},
 			controlsRow: {
+				flex: 1,
 				flexDirection: 'row',
 				backgroundColor: 'rgba(255,255,255,.7)',
 				//borderRadius: 15,

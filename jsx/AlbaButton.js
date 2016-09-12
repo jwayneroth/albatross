@@ -18,13 +18,13 @@ export class AlbaButton extends Component {
 		
 		this.styles = StyleSheet.create({
 			buttonContainer: {
-				//flex: -1,
+				//flex: 1,
 				//flexDirection: 'column',
 				//alignItems: 'flex-start',
 				//margin: 15,
 			},
 			button: {
-				//flex: -1,
+				//flex: 1,
 				//flexWrap: 'wrap',
 				//flexDirection: 'column',
 				backgroundColor: 'rgba(255,255,255,.7)',
