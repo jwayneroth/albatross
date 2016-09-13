@@ -21,6 +21,8 @@
 @property (nonatomic, retain) NSMutableArray *players;
 @property (nonatomic, assign) NSInteger randID;
 @property (nonatomic, assign) NSInteger playerID;
+@property (nonatomic, strong) NSTimer *timer;
+//@property (nonatomic, assign) BOOL playing;
 
 //-(void) showMediaPicker:(NSInteger)playerID;
 

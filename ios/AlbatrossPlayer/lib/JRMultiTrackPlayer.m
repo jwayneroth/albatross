@@ -17,6 +17,15 @@
 		_players = [[NSMutableArray alloc] init];
 		_playerID = 0;
 	}
+	
+	AVAudioSession *session = [AVAudioSession sharedInstance];
+	
+	NSError *setCategoryError = nil;
+	
+	if (![session setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError]) {
+		NSLog(@"%@", [setCategoryError localizedDescription]);
+	}
+	
 	return self;
 }
 
@@ -36,7 +45,7 @@ RCT_EXPORT_MODULE();
 	
 	if(self.mediaPicker == nil) {
 		
-		self.mediaPicker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
+		self.mediaPicker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeAnyAudio];//MPMediaTypeMusic];
 	
 		[self.mediaPicker setDelegate:self];
 		[self.mediaPicker setAllowsPickingMultipleItems:NO];
@@ -98,10 +107,34 @@ RCT_EXPORT_MODULE();
 	} else {
 		[player prepareToPlay];
 		[player play];
+		if (!self.timer) {
+			self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 
+			                                              target:self 
+			                                            selector:@selector(timerUpdate) 
+			                                            userInfo:nil 
+			                                             repeats:YES];
+		}
 	}
 	
 	hideMediaPicker();
 	
+}
+
+//
+// timerUpdate
+//
+- (void)timerUpdate {
+	
+	NSLog(@"timerUpdate");
+	
+	//float progress = self.audioPlayer.currentTime;
+	//[self.seekbar setValue:progress];
+	
+	for (AVAudioPlayer *player in self.players) {
+		if (player.playing == YES) {
+			NSLog(@"player x is at %f", player.currentTime);
+		}
+	}
 }
 
 //
@@ -201,12 +234,26 @@ RCT_EXPORT_METHOD(stopPlayerByID:(NSInteger)playerID
 	}
 	
 	if (player) {
+		
 		[player stop];
 		player.currentTime = 0;
 		player.rate = 1.0;                                                                                                                  
 		player.volume = 1.0;
 		player.pan = 0;
+		//[self.players removeObjectAtIndex:playerID];
 		resolve(@"stopped player");
+		
+		// if no players playing, kill our timer
+		BOOL playing = NO;
+		for (AVAudioPlayer *player in self.players) {
+			if (player.playing == YES) {
+				playing = YES;
+			}
+		}
+		if (!playing) {
+			[self.timer invalidate];
+			self.timer = nil;
+		}
 	}
 }
 
@@ -218,14 +265,6 @@ RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
                        rejecter:(RCTPromiseRejectBlock)reject) {
 	
 	NSLog(@"findAlbatross::%zd", self.randID);
-	
-	AVAudioSession *session = [AVAudioSession sharedInstance];
-	
-	NSError *setCategoryError = nil;
-	
-	if (![session setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError]) {
-		NSLog(@"%@", [setCategoryError localizedDescription]);
-	}
 	
 	MPMediaQuery *songsQuery = [[MPMediaQuery alloc] init];
 	NSArray *items = [songsQuery items];

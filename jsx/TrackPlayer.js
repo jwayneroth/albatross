@@ -1,5 +1,5 @@
 import React, { 
-	Component 
+	Component
 } from 'react';
 
 import {
@@ -7,6 +7,7 @@ import {
 	StyleSheet,
 	Text,
 	View,
+	Dimensions,
 	NativeAppEventEmitter
 } from 'react-native';
 
@@ -42,7 +43,6 @@ export class TrackPlayer extends Component {
 		};
 		
 		this.state = {
-			visible: true,
 			rateSliderDisabled: true,
 			rateSliderVal: 1.0,
 			volSliderDisabled: true,
@@ -56,13 +56,13 @@ export class TrackPlayer extends Component {
 			}
 		};
 		
-		if (this.props.index == 0) {
+		/*if (this.props.index == 0) {
 			JRMultiTrackPlayer.findAlbatross(this.props.index).then((success) => {
 				console.log('found albatross :)');
 			}, (error) => {
 				console.log('no albatross :(');
 			});
-		}
+		}*/
 	}
 	
 	componentWillMount() {
@@ -136,19 +136,11 @@ export class TrackPlayer extends Component {
 		JRMultiTrackPlayer.showPicker(this.props.index);
 	}
 	
-	_onCloseButtonClick() {
-		//JRMultiTrackPlayer.showPicker(this.props.index);
-		this.setState({visible: false});
-	}
-	
 	render() {
 		
-		if (!this.state.visible) {
-			return null;
-		}
-		
+		var {height, width} = Dimensions.get('window');
 		var playing = this.state.songPlaying;
-		var playingText = (!this.state.songPlaying) ? 'no song' : 
+		var playingText = (!this.state.songPlaying) ? '' : 
 		                                               this.state.songInfo.artist + 
 		                                               ' "' + this.state.songInfo.title + '"';
 		var buttonText = (!this.state.songPlaying) ? 'pick a song' : 'change song';
@@ -186,7 +178,7 @@ export class TrackPlayer extends Component {
 					<View style={JRTrackPlayerStyles.buttonsContainer}>
 						<AlbaButton 
 						 onPress={this.props.onHide}
-						 text={'close'} />
+						 text={'- remove track'} />
 						<AlbaButton 
 						 onPress={this._onSelectButtonClick.bind(this, this.props.index)}
 						 text={buttonText} />
@@ -205,6 +197,9 @@ TrackPlayer.defaultProps = {
 	
 };
 
+let { height, width } = Dimensions.get('window');
+const ww = (width < height) ? width: height;
+
 const JRTrackPlayerStyles = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -212,6 +207,12 @@ const JRTrackPlayerStyles = StyleSheet.create({
 		//margin: 15,
 		//marginTop: 0,
 		//marginBottom: 5,
+		backgroundColor: 'rgba(255,255,255,.7)',
+		borderBottomWidth: 1,
+		borderBottomColor: 'rgba(0,0,0,.3)',
+		padding: 12,
+		paddingTop: 5,
+		position: 'relative',
 	},
 	playing: {
 		//margin: 5,
@@ -220,18 +221,18 @@ const JRTrackPlayerStyles = StyleSheet.create({
 	controlsRow: {
 		flex: 1,
 		flexDirection: 'row',
-		backgroundColor: 'rgba(255,255,255,.7)',
 		//borderRadius: 15,
 		//padding: 15,
 		//margin: 0,
 		//marginTop: 5
 	},
 	slidersContainer: {
-		flex: 2,
+		width: .65 * ww,
 	},
 	slider: {
+		height: 18,
 	},
 	butttonsContainer: {
-		flex: 1,
+		width: .35 * ww
 	}
 });

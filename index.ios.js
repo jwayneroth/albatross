@@ -1,5 +1,5 @@
 /**
- * Sample React Native App
+ * AlbatrossPlayer React Native App
  * https://github.com/facebook/react-native
  * @flow
  */
@@ -37,13 +37,16 @@ class AlbatrossPlayer extends Component {
 		this._addNewTrack();
 	}
 	
+	componentWillUnmount() {
+	}
+	
 	_checkAddTrack() {
-		
+	
 		// do we have any inactive tracks
 		var i = 0,
 		    idx = 0,
 		    tracks = this.state.tracks;
-		    
+		
 		for (i;i<tracks.length;i++) {
 			if (!tracks[i].active) {
 				tracks[i].active = true;
@@ -53,10 +56,10 @@ class AlbatrossPlayer extends Component {
 				return
 			}
 		}
-		
+	
 		// if no, check if we can add a new track
 		if (tracks.length < this.trackLimit) this._addNewTrack();
-		
+	
 	}
 	
 	_getActiveTracks() {
@@ -77,30 +80,46 @@ class AlbatrossPlayer extends Component {
 	
 	_addNewTrack() {
 		
-		console.log('_addNewTrack',  this.state.tracks);
-		
 		var tracks = this.state.tracks;
 		
 		tracks.push({
-			active: true
+			active: true,
+			tid: tracks.length,
 		})
 		
 		this.setState({
 			tracks: tracks
 		});
+		
+		console.log('_addNewTrack at ' + this.state.tracks.length, this.state.tracks);
+	
 	}
 	
-	_onTrackHidden(idx) {
+	_getTrackIndex(tid) {
+		var i = 0;
+		for(i; i<this.state.tracks.length; i++) {
+			if (this.state.tracks[i].tid == tid) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	_onTrackHidden(tid) {
 		
-		console.log('_onTrackHidden', idx);
-		
-		var tracks = this.state.tracks;
+		var tracks = this.state.tracks,
+		    idx = this._getTrackIndex(tid);
 		
 		tracks[idx].active = false;
-	
+		
+		tracks.push(tracks.splice(idx,1)[0]);
+		
 		this.setState({
 			tracks: tracks
 		});
+		
+		console.log('_onTrackHidden \t tid: ' + tid + ' idx: ' + idx, this.state.tracks);
+	
 	}
 	
 	render() {
@@ -110,14 +129,12 @@ class AlbatrossPlayer extends Component {
 		    i = 0,
 		    tracks = this.state.tracks,
 		    out = new Array();
-		    
-		console.log('render', active);
 		
 		for(i;i<tracks.length;i++) {
 			if (tracks[i].active) {
-				out.push(<TrackPlayer index={i} 
-				                         key={i}
-				                         onHide={this._onTrackHidden.bind(this, i)} />);
+				out.push(<TrackPlayer index={tracks[i].tid} 
+				                        key={tracks[i].tid}
+				                     onHide={this._onTrackHidden.bind(this, tracks[i].tid)} />);
 			}
 		}
 		
@@ -130,7 +147,7 @@ class AlbatrossPlayer extends Component {
 					 style={AlbaStyles.bgImage} />
 				</View>
 				<AlbaButton 
-				 text={'add track'}
+				 text={'+ add track'}
 				 disabled={btnState}
 				 onPress={this._checkAddTrack.bind(this)} />
 				<ScrollView
@@ -167,5 +184,6 @@ const AlbaStyles = StyleSheet.create({
 	scrollView: {
 		flex: 1,
 		alignSelf: 'stretch',
+		marginTop: 12,
 	}
 });
