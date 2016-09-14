@@ -10,14 +10,26 @@
 
 @implementation JRMultiTrackPlayer
 
+//
+// init
+//
 -(id)init {
+	
 	self = [super init];
+	
 	if (self) {
 		_randID = arc4random_uniform(1000);
 		_players = [[NSMutableArray alloc] init];
 		_playerID = 0;
 	}
 	
+	// query if other audio is playing
+	BOOL isPlayingWithOthers = [[AVAudioSession sharedInstance] isOtherAudioPlaying];
+	
+	// test it with...
+	(isPlayingWithOthers) ? NSLog(@"other audio is playing") : NSLog(@"no other audio is playing");
+	
+	// set up AudioSession
 	AVAudioSession *session = [AVAudioSession sharedInstance];
 	
 	NSError *setCategoryError = nil;
@@ -26,6 +38,16 @@
 		NSLog(@"%@", [setCategoryError localizedDescription]);
 	}
 	
+	// register for notifications
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interruption:)
+                                               name:AVAudioSessionInterruptionNotification
+                                              object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(routeChange:)
+                                              name:AVAudioSessionRouteChangeNotification
+                                            object:nil];
+
 	return self;
 }
 
@@ -125,14 +147,14 @@ RCT_EXPORT_MODULE();
 //
 - (void)timerUpdate {
 	
-	NSLog(@"timerUpdate");
+	//NSLog(@"timerUpdate");
 	
 	//float progress = self.audioPlayer.currentTime;
 	//[self.seekbar setValue:progress];
 	
 	for (AVAudioPlayer *player in self.players) {
 		if (player.playing == YES) {
-			NSLog(@"player x is at %f", player.currentTime);
+			//NSLog(@"player x is at %f", player.currentTime);
 		}
 	}
 }
@@ -270,7 +292,7 @@ RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
 	NSArray *items = [songsQuery items];
 	
 	for(MPMediaItem *item in items) {
-			
+		
 		NSString *albumArtist =[item valueForProperty: MPMediaItemPropertyAlbumArtist];
 		NSString *title = [item valueForProperty: MPMediaItemPropertyTitle];
 		
@@ -320,6 +342,105 @@ RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
 		
 	NSError *error;
 	reject(@"no_alabatross", @"albatross not found", error); 
+	
+}
+
+- (void)interruption:(NSNotification*)notification {
+	
+	// get the user info dictionary
+	NSDictionary *interuptionDict = notification.userInfo;
+	
+	// get the AVAudioSessionInterruptionTypeKey enum from the dictionary
+	NSInteger interuptionType = [[interuptionDict valueForKey:AVAudioSessionInterruptionTypeKey] integerValue];
+	
+	// decide what to do based on interruption type here...
+	switch (interuptionType) {
+			case AVAudioSessionInterruptionTypeBegan:
+					NSLog(@"Audio Session Interruption case started.");
+					// fork to handling method here...
+					// EG:[self handleInterruptionStarted];
+					break;
+
+			case AVAudioSessionInterruptionTypeEnded:
+					NSLog(@"Audio Session Interruption case ended.");
+					// fork to handling method here...
+					// EG:[self handleInterruptionEnded];
+					
+					[self restartPlayers];
+					
+					break;
+
+			default:
+					NSLog(@"Audio Session Interruption Notification case default.");
+					break;
+	}
+}
+
+- (void)routeChange:(NSNotification*)notification {
+
+	NSDictionary *interuptionDict = notification.userInfo;
+
+	NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+
+	switch (routeChangeReason) {
+			case AVAudioSessionRouteChangeReasonUnknown:
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonUnknown");
+					break;
+
+			case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
+					// a headset was added or removed
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonNewDeviceAvailable");
+					break;
+
+			case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+					// a headset was added or removed
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonOldDeviceUnavailable");
+					break;
+
+			case AVAudioSessionRouteChangeReasonCategoryChange:
+					// called at start - also when other audio wants to play
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonCategoryChange");//AVAudioSessionRouteChangeReasonCategoryChange
+					break;
+
+			case AVAudioSessionRouteChangeReasonOverride:
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonOverride");
+					break;
+
+			case AVAudioSessionRouteChangeReasonWakeFromSleep:
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonWakeFromSleep");
+					break;
+
+			case AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory:
+					NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory");
+					break;
+
+			default:
+					break;
+	}
+}
+
+//
+// restartPlayers
+//
+- (void) restartPlayers {
+	
+	NSLog(@"restartPlayers");
+	
+	// set up AudioSession
+	AVAudioSession *session = [AVAudioSession sharedInstance];
+	
+	NSError *setCategoryError = nil;
+	
+	if (![session setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError]) {
+		NSLog(@"%@", [setCategoryError localizedDescription]);
+	}
+	
+	for (AVAudioPlayer *player in self.players) {
+		NSLog(@"player x is at %f", player.currentTime);
+		if (player.playing == NO) {
+			[player play];
+		}
+	}
 	
 }
 

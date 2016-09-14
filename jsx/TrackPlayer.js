@@ -151,6 +151,12 @@ export class TrackPlayer extends Component {
 		return (
 			<View style={JRTrackPlayerStyles.container}>
 				<Text style={JRTrackPlayerStyles.playing}>{playingText}</Text>
+				<Text style={JRTrackPlayerStyles.info}>{''}</Text>
+				<Slider 
+					style={JRTrackPlayerStyles.slider}
+					{...this.rateSliderDefaults}
+					value = {0}
+					disabled = {true}/>
 				<View style={JRTrackPlayerStyles.controlsRow}>
 					<View style={JRTrackPlayerStyles.slidersContainer}>
 						<Text style={JRTrackPlayerStyles.info}>{currentRate}</Text>
