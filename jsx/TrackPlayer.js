@@ -98,9 +98,10 @@ export class TrackPlayer extends Component {
 
 					var i = 0,
 					    update;
+					
 					for(i;i<evt.length;i++) {
 						update  = evt[i];
-						console.log(update);
+						//console.log(update);
 						if (update.player == this.props.index) {
 							this.setState({
 								timeSliderVal: update.currentTime
@@ -266,8 +267,8 @@ const JRTrackPlayerStyles = StyleSheet.create({
 	},
 	timeSlider: {
 		width: ww,
-	}
+	},
 	butttonsContainer: {
-		width: .35 * ww
+		width: .35 * ww,
 	}
 });

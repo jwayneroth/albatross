@@ -64,11 +64,11 @@ RCT_EXPORT_MODULE();
 -(void) showMediaPicker:(NSInteger)playerID  {
 
 	self.playerID = playerID;
-
+	
 	if(self.mediaPicker == nil) {
-
+	
 		self.mediaPicker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeAnyAudio];//MPMediaTypeMusic];
-
+		
 		[self.mediaPicker setDelegate:self];
 		[self.mediaPicker setAllowsPickingMultipleItems:NO];
 		[self.mediaPicker setShowsCloudItems:NO];
@@ -76,9 +76,9 @@ RCT_EXPORT_MODULE();
 	}
 
 	AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
+	
 	[delegate.rootViewController presentViewController:self.mediaPicker animated:YES completion:nil];
-
+	
 }
 
 //
@@ -86,60 +86,70 @@ RCT_EXPORT_MODULE();
 //
 -(void) mediaPicker:(MPMediaPickerController *)mediaPicker
   didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection {
-
+	
 	MPMediaItem *mediaItem = mediaItemCollection.items[0];
-
 	NSURL *assetURL = [mediaItem valueForProperty:MPMediaItemPropertyAssetURL];
-
-	NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
-                              @"title" : [mediaItem valueForProperty:MPMediaItemPropertyTitle],
-                             @"player" : [NSNumber numberWithInteger:self.playerID]
-	};
-
-	[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
-
 	NSError *error;
 	AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:assetURL error:&error];
-	float rate;
-	float volume;
-	float pan;
-
-	if ([self.players count] > self.playerID) {
-		AVAudioPlayer *oldPlayer = [self.players objectAtIndex:self.playerID];
-		rate = oldPlayer.rate;
-		volume = oldPlayer.volume;
-		pan = oldPlayer.pan;
-		[self.players replaceObjectAtIndex:self.playerID withObject:player];
-	} else {
-		rate = 1.0;
-		volume = 1.0;
-		pan = 0;
-		[self.players addObject:player];
-	}
-
-	[player setDelegate:self];
-	player.numberOfLoops = -1;
-	player.enableRate = YES;
-	player.rate = rate;
-	player.volume = volume;
-	player.pan = pan;
-
+	
 	if (error) {
+		
 		NSLog(@"%@", [error localizedDescription]);
+	
 	} else {
+		
+		NSLog(@"mediaPicker player created:player ID %@ current players %d", [NSNumber numberWithInteger:self.playerID], [self.players count]);
+		
+		NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
+																@"title" : [mediaItem valueForProperty:MPMediaItemPropertyTitle],
+															 @"player" : [NSNumber numberWithInteger:self.playerID]
+		};
+		
+		[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
+		
+		float rate;
+		float volume;
+		float pan;
+		
+		if ([self.players count] > self.playerID) {
+			
+			AVAudioPlayer *oldPlayer = [self.players objectAtIndex:self.playerID];
+			rate = oldPlayer.rate;
+			volume = oldPlayer.volume;
+			pan = oldPlayer.pan;
+			[self.players replaceObjectAtIndex:self.playerID withObject:player];
+		
+		} else {
+			
+			rate = 1.0;
+			volume = 1.0;
+			pan = 0;
+		
+			[self.players addObject:player];
+		
+		}
+		
+		[player setDelegate:self];
+		player.numberOfLoops = -1;
+		player.enableRate = YES;
+		player.rate = rate;
+		player.volume = volume;
+		player.pan = pan;
+		
 		[player prepareToPlay];
 		[player play];
+		
 		if (!self.timer) {
 			self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-			                                              target:self
-			                                            selector:@selector(timerUpdate)
-			                                            userInfo:nil
-			                                             repeats:YES];
+																										target:self
+																									selector:@selector(timerUpdate)
+																									userInfo:nil
+																									 repeats:YES];
 		}
 	}
-
+	
 	hideMediaPicker();
-
+	
 }
 
 //
@@ -151,8 +161,8 @@ RCT_EXPORT_MODULE();
 
 	//float progress = self.audioPlayer.currentTime;
 	//[self.seekbar setValue:progress];
-
-	NSMutableArray *evtObject = [[NSMutableArray alloc] init];
+	
+	NSMutableArray *arr = [[NSMutableArray alloc] init];
 	NSDictionary *active;
 	int i = 0;
 
@@ -161,13 +171,19 @@ RCT_EXPORT_MODULE();
 
 			//NSLog(@"player x is at %f", player.currentTime);
 
-			active = @{@"player": i,
-			      @"currentTime": player.currentTime};
+			active = @{@"player": [NSNumber numberWithInteger:i],
+			      @"currentTime": [NSNumber numberWithInteger:player.currentTime]};
+			
+			[arr addObject:active];
+			
 		}
 		i++;
 	}
-
+	
+	NSDictionary *evtObject = @{@"players": arr};
+	
 	[self.bridge.eventDispatcher sendAppEventWithName:@"PlayingUpdate" body:evtObject];
+	
 }
 
 //
@@ -444,7 +460,7 @@ RCT_EXPORT_METHOD(findAlbatross:(NSInteger)playerID
 
 	for (AVAudioPlayer *player in self.players) {
 		NSLog(@"player %d is at %f", i, player.currentTime);
-		NSLog(@"player %d playing? : %@", i, (player.playing) > @"YES" : @"NO");
+		NSLog(@"player %d playing? : %@", i, (player.playing) ? @"YES" : @"NO");
 		i++;
 	}
 
