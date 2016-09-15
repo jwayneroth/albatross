@@ -44,8 +44,8 @@ export class TrackPlayer extends Component {
 
 		this.timeSliderDefaults = {
 			minimumValue: 0,
-			maximumValue: 1.0,
-			step: 0.01
+			maximumValue: 100,
+			step: 1
 		};
 
 		this.state = {
@@ -53,14 +53,16 @@ export class TrackPlayer extends Component {
 			rateSliderVal: 1.0,
 			volSliderDisabled: true,
 			panSliderDisabled: true,
-			timeSliderDisabled: true,
+			timeSliderDisabled: false,
 			volSliderVal: 1.0,
 			timeSliderVal: 0,
 			panSliderVal: 0,
+			timeSliderMax: this.timeSliderDefaults.maximumValue,
 			songPlaying: false,
 			songInfo: {
 				title: '',
-				artist: ''
+				artist: '',
+				duration: 0,
 			}
 		};
 
@@ -86,26 +88,33 @@ export class TrackPlayer extends Component {
 					songInfo: {
 						title: evt.title,
 						artist: evt.artist,
+						duration: evt.duration
 					},
 					rateSliderDisabled: false,
 					volSliderDisabled: false,
 					panSliderDisabled: false,
+					timeSliderMax: evt.duration,
 				});
 
 				this.playingSubscription = NativeAppEventEmitter.addListener('PlayingUpdate', (evt) => {
 
-					console.log('PlayingUpdate', evt);
+					//console.log('PlayingUpdate', evt);
 
 					var i = 0,
 					    update;
 					
-					for(i;i<evt.length;i++) {
-						update  = evt[i];
-						//console.log(update);
+					for(i; i<evt.players.length; i++) {
+						
+						update  = evt.players[i];
+						
 						if (update.player == this.props.index) {
+							
+							//if (this.props.index == 0) console.log(update);
+							
 							this.setState({
 								timeSliderVal: update.currentTime
 							});
+						
 						}
 					}
 				});
@@ -174,14 +183,15 @@ export class TrackPlayer extends Component {
 		var currentRate = 'Rate: ' + this.state.rateSliderVal.toFixed(2);
 		var currentVol = 'Vol: ' + this.state.volSliderVal.toFixed(2);
 		var currentPan = 'Pan: ' + this.state.panSliderVal.toFixed(2);
+		var currentTimeText = this.state.timeSliderVal + ' / ' + this.state.songInfo.duration;
 
 		return (
 			<View style={JRTrackPlayerStyles.container}>
 				<Text style={JRTrackPlayerStyles.playing}>{playingText}</Text>
-				<Text style={JRTrackPlayerStyles.info}>{''}</Text>
+				<Text style={JRTrackPlayerStyles.info}>{currentTimeText}</Text>
 				<Slider
 					style={JRTrackPlayerStyles.slider, JRTrackPlayerStyles.timeSlider}
-					{...this.timeSliderDefaults}
+					{...Object.assign(this.timeSliderDefaults, {maximumValue: this.state.timeSliderMax})}
 					value = {this.state.timeSliderVal}
 					disabled = {this.state.timeSliderDisabled}/>
 				<View style={JRTrackPlayerStyles.controlsRow}>
@@ -266,7 +276,8 @@ const JRTrackPlayerStyles = StyleSheet.create({
 		height: 18,
 	},
 	timeSlider: {
-		width: ww,
+		//width: ww,
+		alignSelf: 'stretch',
 	},
 	butttonsContainer: {
 		width: .35 * ww,

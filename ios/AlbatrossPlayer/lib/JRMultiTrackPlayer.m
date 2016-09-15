@@ -100,9 +100,10 @@ RCT_EXPORT_MODULE();
 		
 		NSLog(@"mediaPicker player created:player ID %@ current players %d", [NSNumber numberWithInteger:self.playerID], [self.players count]);
 		
-		NSDictionary *evtObject = @{@"artist": [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
-																@"title" : [mediaItem valueForProperty:MPMediaItemPropertyTitle],
-															 @"player" : [NSNumber numberWithInteger:self.playerID]
+		NSDictionary *evtObject = @{@"artist" : [mediaItem valueForProperty:MPMediaItemPropertyAlbumArtist],
+																 @"title" : [mediaItem valueForProperty:MPMediaItemPropertyTitle],
+																@"player" : [NSNumber numberWithInteger:self.playerID],
+															@"duration" : [mediaItem valueForProperty:MPMediaItemPropertyPlaybackDuration]
 		};
 		
 		[self.bridge.eventDispatcher sendAppEventWithName:@"SongPlaying" body:evtObject];
@@ -111,7 +112,7 @@ RCT_EXPORT_MODULE();
 		float volume;
 		float pan;
 		
-		if ([self.players count] > self.playerID) {
+		if ([self.players count] > (self.playerID + 1)) {
 			
 			AVAudioPlayer *oldPlayer = [self.players objectAtIndex:self.playerID];
 			rate = oldPlayer.rate;
@@ -140,7 +141,7 @@ RCT_EXPORT_MODULE();
 		[player play];
 		
 		if (!self.timer) {
-			self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+			self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0
 																										target:self
 																									selector:@selector(timerUpdate)
 																									userInfo:nil
@@ -172,7 +173,7 @@ RCT_EXPORT_MODULE();
 			//NSLog(@"player x is at %f", player.currentTime);
 
 			active = @{@"player": [NSNumber numberWithInteger:i],
-			      @"currentTime": [NSNumber numberWithInteger:player.currentTime]};
+						@"currentTime": [NSNumber numberWithInteger:player.currentTime]};
 			
 			[arr addObject:active];
 			
