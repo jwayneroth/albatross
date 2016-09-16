@@ -127,16 +127,16 @@ export class TrackPlayer extends Component {
 	}
 
 	componentWillUnmount() {
-
+		
 		JRMultiTrackPlayer.stopPlayerByID(this.props.index).then((success) => {
 			console.log('stopPlayerByID success', success);
 		}, (error) => {
 			console.error('stopPlayerByID error', error);
 		});
-
+		
 		if (this.playerSubscription) this.playerSubscription.remove();
 		if (this.playingSubscription) this.playingSubscription.remove();
-
+		
 	}
 
 	_onRateUpdate(val) {
