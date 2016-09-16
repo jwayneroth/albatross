@@ -53,7 +53,7 @@ export class TrackPlayer extends Component {
 			rateSliderVal: 1.0,
 			volSliderDisabled: true,
 			panSliderDisabled: true,
-			timeSliderDisabled: false,
+			timeSliderDisabled: true,
 			volSliderVal: 1.0,
 			timeSliderVal: 0,
 			panSliderVal: 0,
@@ -62,7 +62,7 @@ export class TrackPlayer extends Component {
 			songInfo: {
 				title: '',
 				artist: '',
-				duration: 0,
+				duration: '',
 			}
 		};
 
@@ -82,13 +82,17 @@ export class TrackPlayer extends Component {
 			if (evt.player == this.props.index) {
 
 				console.log('SongPlaying', evt);
-
+				
+				var dm = parseInt(evt.duration / 60);
+				var ds = parseInt(evt.duration % 60);
+				if (ds < 10) ds  = '0' + ds;
+				
 				this.setState({
 					songPlaying: true,
 					songInfo: {
 						title: evt.title,
 						artist: evt.artist,
-						duration: evt.duration
+						duration: dm + ':' + ds,
 					},
 					rateSliderDisabled: false,
 					volSliderDisabled: false,
@@ -183,8 +187,13 @@ export class TrackPlayer extends Component {
 		var currentRate = 'Rate: ' + this.state.rateSliderVal.toFixed(2);
 		var currentVol = 'Vol: ' + this.state.volSliderVal.toFixed(2);
 		var currentPan = 'Pan: ' + this.state.panSliderVal.toFixed(2);
-		var currentTimeText = this.state.timeSliderVal + ' / ' + this.state.songInfo.duration;
-
+		var currentTimeText = '';
+		if (this.state.timeSliderVal) {
+			var cm = parseInt(this.state.timeSliderVal / 60);
+			var cs = parseInt(this.state.timeSliderVal % 60, 10);
+			if (cs < 10) cs = '0' + cs;
+			currentTimeText = cm + ':' + cs + ' / ' + this.state.songInfo.duration;
+		}
 		return (
 			<View style={JRTrackPlayerStyles.container}>
 				<Text style={JRTrackPlayerStyles.playing}>{playingText}</Text>

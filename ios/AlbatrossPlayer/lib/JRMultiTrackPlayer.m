@@ -112,7 +112,7 @@ RCT_EXPORT_MODULE();
 		float volume;
 		float pan;
 		
-		if ([self.players count] > (self.playerID + 1)) {
+		if ([self.players count] > self.playerID) {
 			
 			AVAudioPlayer *oldPlayer = [self.players objectAtIndex:self.playerID];
 			rate = oldPlayer.rate;
